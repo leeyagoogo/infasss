@@ -1,0 +1,138 @@
+body {
+    background: #f4f6f9;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI',sans-serif;
+}
+
+.auth-container {
+    width: 100%;
+    height: 100vh; /* full */
+    max-width: none;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+}
+
+.auth-card {
+    border-radius: 0;
+    overflow: hidden;
+    background: white;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100%;
+}
+
+.left-panel {
+    background: #1abc9c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: auto;
+    text-align: center;
+    flex: 1;
+    padding: 40px;
+}
+
+.avatar {
+    width: 220px;
+    height: 220px;
+    object-fit: contain;
+}
+
+.left-panel h1 {
+    font-weight: bold;
+    font-size: 48px;
+    margin-top: 20px;
+}
+
+.divider {
+    width: 140px;
+    border: 2px solid white;
+    opacity: 1;
+}
+
+.left-panel p {
+    font-size: 20px;
+    margin-top: 12px;
+}
+
+.right-panel {
+    background: white;
+    padding: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 320px;
+}
+
+    .right-panel h2 {
+        text-align: center;
+        color: #2C3E50;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+.subtitle {
+    text-align: center;
+    color: gray;
+    margin-bottom: 40px;
+}
+
+.custom-input {
+    border: none;
+    border-bottom: 2px solid #dcdcdc;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 15px;
+}
+
+.custom-input:focus {
+    border-color: #1abc9c;
+    box-shadow: none;
+}
+
+.login-btn {
+    background: #2C3E50;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.login-btn:hover {
+    background: #17a589;
+    color: white;
+}
+
+a {
+    color: #1abc9c;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 991px) {
+    .auth-card {
+        flex-direction: column;
+    }
+
+    .left-panel, .right-panel {
+        padding: 30px;
+    }
+
+    .avatar {
+        width: 160px;
+        height: 160px;
+    }
+}
