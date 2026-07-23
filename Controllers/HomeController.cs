@@ -1,103 +1,68 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using INFASS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace INFASS.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        private static List<User> users = new List<User>
-        {
-            new User
-            {
-                Username = "admin",
-                Email = "admin@infass.com",
-                Password = "1234"
-            }
-        };
-
+        private static readonly List<User> RegisteredUsers = new List<User>();
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        // ================= LOGIN =================
-
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
         [HttpPost]
-        public IActionResult Login(User user)
+        [Route("/getUser")]
+        public IActionResult getUser([FromForm] User user)
         {
-            var account = users.FirstOrDefault(u =>
-                u.Username == user.Username &&
-                u.Password == user.Password);
+            if (user == null)
+                return BadRequest("No user submitted.");
 
-            if (account != null)
-            {
-                TempData["Success"] = "Login Successful!";
-                return RedirectToAction("Index");
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            ViewBag.Error = "Invalid username or password.";
-            return View(user);
+            if (RegisteredUsers.Any(u => string.Equals(u.Email, user.Email?.Trim(), StringComparison.OrdinalIgnoreCase)))
+                return BadRequest("Email already registered.");
+
+            user.Email = user.Email?.Trim() ?? string.Empty;
+            RegisteredUsers.Add(user);
+
+            return Content("Controller: " + user.Name + " " + user.Email);
         }
-
-        // ================= REGISTER =================
 
         [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
 
         [HttpPost]
-        public IActionResult Register(User user)
+        [Route("/loginUser")]
+        public IActionResult LoginUser(string email, string pass)
         {
-            // Check if username already exists
-            if (users.Any(u => u.Username == user.Username))
-            {
-                ViewBag.Error = "Username already exists.";
-                return View(user);
-            }
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pass))
+                return BadRequest("Missing email or password.");
 
-            // Check passwords
-            if (user.Password != user.ConfirmPassword)
-            {
-                ViewBag.Error = "Passwords do not match.";
-                return View(user);
-            }
+            var match = RegisteredUsers.FirstOrDefault(u =>
+                string.Equals(u.Email, email.Trim(), StringComparison.OrdinalIgnoreCase)
+                && u.Password == pass);
 
-            // Save user temporarily
-            users.Add(new User
-            {
-                Username = user.Username,
-                Email = user.Email,
-                Password = user.Password
-            });
+            if (match != null)
+                return Json(new { success = true });
 
-            TempData["Success"] = "Registration successful! Please login.";
-
-            return RedirectToAction("Login");
+            return BadRequest("Invalid email or password.");
         }
 
-        // ================= OTHER =================
+        [HttpGet]
+        public IActionResult Register() => View();
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult Privacy() => View();
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

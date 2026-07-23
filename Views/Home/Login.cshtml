@@ -25,16 +25,18 @@
             <h2>LOGIN</h2>
             <p class="subtitle">Welcome back! Login to continue.</p>
 
-            <form asp-action="Login" method="post">
+            <div id="login-alert" class="alert d-none"></div>
+
+            <form id="loginForm" onsubmit="return false;">
                 <div class="mb-4">
-                    <input asp-for="Username" class="form-control custom-input" placeholder="Username" />
+                    <input id="email" type="email" class="form-control custom-input" placeholder="Email" />
                 </div>
 
                 <div class="mb-4">
-                    <input asp-for="Password" type="password" class="form-control custom-input" placeholder="Password" />
+                    <input id="password" type="password" class="form-control custom-input" placeholder="Password" />
                 </div>
 
-                <button class="btn login-btn w-100" type="submit">LOGIN</button>
+                <button id="loginBtn" type="button" class="btn login-btn w-100">LOGIN</button>
             </form>
 
             <div class="text-center mt-4">
@@ -54,3 +56,47 @@
     </div>
 
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#loginBtn').click(function () {
+                var email = $('#email').val();
+                var pass = $('#password').val();
+
+                if (!email || !pass) {
+                    alert('Email and password are required.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/loginUser',
+                    method: 'POST',
+                    data: {
+                        email: email,
+                        pass: pass
+                    },
+                    success: function (res) {
+                        if (res && res.success) {
+                            window.location.href = '/Home/Index'
+                        } else {
+                            alert('Login failed.');
+                        }
+                    },
+                    error: function (xhr) {
+                        var msg = 'Login failed.';
+                        if (xhr && xhr.responseText) {
+                            try {
+                                var json = JSON.parse(xhr.responseText);
+                                if (json && json.error) msg = json.error;
+                            } catch (e) {
+                                msg = xhr.responseText;
+                            }
+                        }
+                        alert(msg);
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,57 +1,40 @@
 ﻿@model INFASS.Models.User
-
 @{
     ViewData["Title"] = "Register";
 }
-
 @section Styles {
     <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
 }
-
 <div class="container-fluid auth-container">
-
     <div class="row auth-card">
-
         <!-- FORM / RIGHT PANEL -->
         <div class="col-lg-6 right-panel">
             <h2>SIGN UP</h2>
             <p class="subtitle">Create your account</p>
-
             @if (ViewBag.Error != null)
             {
                 <div class="alert alert-danger">@ViewBag.Error</div>
             }
-
-            <form asp-action="Register" method="post">
+            <form id="registerForm">
                 <div class="mb-3">
-                    <input asp-for="Username" class="form-control custom-input" placeholder="Username" />
-                    <span asp-validation-for="Username" class="text-danger"></span>
+                    <input type="text" id="name" class="form-control custom-input" placeholder="Name" />
                 </div>
-
                 <div class="mb-3">
-                    <input asp-for="Email" class="form-control custom-input" placeholder="Email" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <input type="email" id="email" class="form-control custom-input" placeholder="Email" />
                 </div>
-
                 <div class="mb-3">
-                    <input asp-for="Password" type="password" class="form-control custom-input" placeholder="Password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <input type="password" id="password" class="form-control custom-input" placeholder="Password" />
                 </div>
-
                 <div class="mb-4">
-                    <input asp-for="ConfirmPassword" type="password" class="form-control custom-input" placeholder="Confirm Password" />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    <input type="password" id="confirmPassword" class="form-control custom-input" placeholder="Confirm Password" />
                 </div>
-
-                <button class="btn login-btn w-100" type="submit">SIGN UP</button>
+                <button id="register" type="button" class="btn login-btn w-100">SIGN UP</button>
             </form>
-
             <div class="text-center mt-4">
                 Already have an account?
                 <a asp-action="Login">Login</a>
             </div>
         </div>
-
         <!-- GREEN SIDE -->
         <div class="col-lg-6 left-panel d-none d-lg-flex">
             <img src="/assets/img/avataaars.svg" class="avatar mb-4" alt="avatar" />
@@ -59,15 +42,44 @@
             <hr class="divider">
             <p>Join our community!</p>
         </div>
-
-        <!-- Show left panel below form on small screens -->
         <div class="col-12 d-lg-none left-panel">
             <img src="/assets/img/avataaars.svg" class="avatar mb-4" alt="avatar" />
             <h1>Start Bootstrap</h1>
             <hr class="divider">
             <p>Join our community!</p>
         </div>
-
     </div>
-
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#register").click(function () {
+                var pass = $("#password").val();
+                var confirm = $("#confirmPassword").val();
+
+                if (pass !== confirm) {
+                    alert("Passwords do not match.");
+                    return;
+                }
+
+                $.ajax({
+                    url: "/getUser",
+                    method: "POST",
+                    data: {
+                        "name": $("#name").val(),
+                        "email": $("#email").val(),
+                        "pass": pass
+                    },
+                    success: function (response) {
+                        alert(response);
+                        window.location.href = "/Home/Login";
+                    },
+                    error: function (xhr) {
+                        alert("Registration failed.");
+                    }
+                });
+            });
+        });
+    </script>
+}
