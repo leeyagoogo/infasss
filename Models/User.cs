@@ -1,26 +1,47 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Extensions.Primitives;
+using System.ComponentModel.DataAnnotations;
 
 namespace INFASS.Models
 {
     public class User
     {
-        [Key]
-        public int Id { get; set; }
+        public string sql(string[] values, string[] numbers)
+        {
+            string val = "";
+            string num = "";
+            string table = "Users";
 
-        [Required(ErrorMessage = "Username is required.")]
-        public string Username { get; set; }
+            for (int i = 0; i < values.Length; i++)
+            {
+                val += values[i];
 
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email address.")]
-        public string Email { get; set; }
+                if (i < values.Length - 1)
+                {
+                    val += ", ";
+                }
+            }
 
-        [Required(ErrorMessage = "Password is required.")]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                if (int.TryParse(numbers[i], out _))
+                {
+                    num += numbers[i];
 
-        [Required(ErrorMessage = "Please confirm your password.")]
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; }
+                }
+
+                else
+                {
+                    num += $"'{numbers[i]}'";
+                }
+
+                if (i < numbers.Length - 1)
+                {
+                    num += ", ";
+                }
+            }
+
+            return $"INSERT INTO {table} ({val}) VALUES ({num});";
+
+        }
     }
 }
